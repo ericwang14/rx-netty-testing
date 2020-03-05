@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.IntStream;
 
 public class Request {
 
@@ -56,9 +57,9 @@ public class Request {
                         ch.pipeline().addLast(new RequestHandler(emitter));
                         // Prepare the HTTP request.
                         HttpRequest request = new DefaultFullHttpRequest(
-                                HttpVersion.HTTP_1_1, HttpMethod.GET, uri, Unpooled.EMPTY_BUFFER);
-                        request.headers().set(HttpHeaderNames.HOST, "services.shop.com");
-                        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                                HttpVersion.HTTP_1_1, HttpMethod.GET, uri);
+                        request.headers().set(HttpHeaderNames.HOST, "services.shop.com:8085");
+                        request.headers().set(HttpHeaderNames.ACCEPT, "*/*");
                         request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
                         request.headers().set(HttpHeaderNames.CONTENT_TYPE, "application/json");
 
@@ -92,20 +93,19 @@ public class Request {
 //        observable.connect();
 
 
-        org.apache.http.client.fluent.Request.Get("http://services.shop.com:8085/Site/260").execute().returnContent().asString();
-        Request.get("/Site/260").subscribe(s -> {
-            System.out.println(s);
-        }, Throwable::printStackTrace);
 
         long start = System.currentTimeMillis();
         Iterable<String> iterator = Observable.merge(
                 List.of(Request.get("/Site/260"),
                         Request.get("/Site/898"),
-                        Request.get("/Site/898"),
-                        Request.get("/Site/898"),
-                        Request.get("/Site/898"),
-                        Request.get("/Site/260"),
-                        Request.get("/Site/260"))
+                        Request.get("/Site/13663"),
+                        Request.get("/Site/23693"),
+                        Request.get("/Site/13693"),
+                        Request.get("/Site/26003"),
+                        Request.get("/Site/26007"),
+                        Request.get("/Site/HomePage/SHOP/260"),
+                        Request.get("/Site/HomePage/SHOP/13663"),
+                        Request.get("/Site/HomePage/SHOP/23693"))
                 )
                 .toBlocking()
                 .toIterable();
@@ -116,6 +116,12 @@ public class Request {
 
 
         System.out.println("total duration : " + (System.currentTimeMillis() - start ) + "ms");
+
+        long a = System.currentTimeMillis();
+        Request.get("/Site/334/States?siteId=260").subscribe(s -> {
+            System.out.println(" total duration : " + (System.currentTimeMillis() - a ) + "ms");
+            System.out.println(s);
+        }, Throwable::printStackTrace);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

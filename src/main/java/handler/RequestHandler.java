@@ -27,16 +27,15 @@ public class RequestHandler extends SimpleChannelInboundHandler<FullHttpResponse
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpResponse msg) throws Exception {
-//        System.out.println(msg.headers().toString());
+        System.out.println(msg.headers().toString());
 
-
+        ctx.close();
         if (msg.status() == HttpResponseStatus.OK) {
             emitter.onNext(msg.content().toString(CharsetUtil.UTF_8));
             emitter.onCompleted();
         } else {
             emitter.onError(new Throwable(msg.content().toString(CharsetUtil.UTF_8)));
         }
-        ctx.close();
 
     }
 
